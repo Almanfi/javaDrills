@@ -1,4 +1,5 @@
-DIRS= java00
+DIRS= java00 \
+	java01
 
 
 all:
