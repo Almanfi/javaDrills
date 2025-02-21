@@ -1,15 +1,11 @@
 package drills.ex03;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-
 
 public class User {
     private final int id;
     private String name;
     private long balance;
-    private List<Transaction> transactions;
+    private TransactionList transactions;
 
     public User(String name, long balance) throws IllegalArgumentException {
         if (balance < 0) {
@@ -18,7 +14,7 @@ public class User {
         this.name = name;
         this.balance = balance;
         this.id = UserIdsGenerator.getInstance().generateId() ;
-        this.transactions = new ArrayList<>();
+        this.transactions = new TransactionLinkedList();
     }
 
     public String getName() {
@@ -55,7 +51,7 @@ public class User {
         return true;
     }
 
-    public List<Transaction> getTransactions() {
-        return Collections.unmodifiableList(transactions);
+    public Transaction[] getTransactions() {
+        return transactions.toArray();
     }
 }

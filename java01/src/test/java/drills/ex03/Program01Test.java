@@ -95,8 +95,8 @@ public class Program01Test {
         User alice = new User("Alice", 3000);
         User bob = new User("Bob", 1000);
         alice.sendMoney(bob, 100);
-        assertEquals(alice.getTransactions().size(), 1);
-        Transaction transaction = alice.getTransactions().get(0);
+        assertEquals(alice.getTransactions().length, 1);
+        Transaction transaction = alice.getTransactions()[0];
         assertEquals(transaction.getSender(), alice);
         assertEquals(transaction.getReceiver(), bob);
         assertEquals(transaction.getAmount(), -100);
@@ -108,8 +108,8 @@ public class Program01Test {
         User alice = new User("Alice", 3000);
         User bob = new User("Bob", 1000);
         alice.sendMoney(bob, 100);
-        assertEquals(bob.getTransactions().size(), 1);
-        Transaction transaction = bob.getTransactions().get(0);
+        assertEquals(bob.getTransactions().length, 1);
+        Transaction transaction = bob.getTransactions()[0];
         assertEquals(transaction.getSender(), bob);
         assertEquals(transaction.getReceiver(), alice);
         assertEquals(transaction.getAmount(), 100);
@@ -121,8 +121,8 @@ public class Program01Test {
         User alice = new User("Alice", 500);
         User bob = new User("Bob", 1000);
         alice.sendMoney(bob, 1000);
-        assertEquals(alice.getTransactions().size(), 0);
-        assertEquals(bob.getTransactions().size(), 0);
+        assertEquals(alice.getTransactions().length, 0);
+        assertEquals(bob.getTransactions().length, 0);
     }
 
     @Test
@@ -131,8 +131,8 @@ public class Program01Test {
         User bob = new User("Bob", 1000);
         alice.sendMoney(bob, 1000);
         alice.sendMoney(bob, 1000);
-        assertEquals(alice.getTransactions().size(), 2);
-        assertEquals(bob.getTransactions().size(), 2);
+        assertEquals(alice.getTransactions().length, 2);
+        assertEquals(bob.getTransactions().length, 2);
         assertEquals(alice.getBalance(), 1000);
         assertEquals(bob.getBalance(), 3000);
     }
