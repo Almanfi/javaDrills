@@ -1,14 +1,8 @@
-import drills.ex00.User;
-import drills.ex00.Transaction;
-import drills.ex00.TransactionType;
+package drills.ex00;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-
 
 public class Program00Test {
     @Test
@@ -24,11 +18,9 @@ public class Program00Test {
     public void UserCreationThrowsOnNegativeBalance() {
         String name = "John Doe";
         long balance = -1000;
-        try {
-            User user = new User(name, balance);
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Balance cannot be negative");
-        }
+        assertThrows(IllegalArgumentException.class, () -> {
+            new User(name, balance);
+        }, "Balance cannot be negative");
     }
 
     @Test
@@ -86,23 +78,14 @@ public class Program00Test {
     public void TransactionCreationUnmatchedTypeThwowTest() {
         User alice = new User("Alice", 3000);
         User bob = new User("Bob", 1000);
-        boolean isThrown = false;
-        try {
-            Transaction transaction = new Transaction(alice, bob, 1000, TransactionType.DEBIT);
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Debit amount must be negative");
-            isThrown = true;
-        }
-        assertEquals(isThrown, true);
 
-        isThrown = false;
-        try {
-            Transaction transaction = new Transaction(alice, bob, -1000, TransactionType.CREDIT);
-        } catch (IllegalArgumentException e) {
-            assertEquals(e.getMessage(), "Credit amount must be positive");
-            isThrown = true;
-        }
-        assertEquals(isThrown, true);
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Transaction(alice, bob, 1000, TransactionType.DEBIT);
+        }, "Debit amount must be negative");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Transaction(alice, bob, -1000, TransactionType.CREDIT);
+        }, "Credit amount must be positive");
     }
 
     @Test

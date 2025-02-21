@@ -21,9 +21,8 @@ public class UserIdsGenerator {
         return id++;
     }
 
-
     @TestOnly
-    public static synchronized void _rest() {
+    static synchronized void _rest() {
         instance = null;
     }
 }

@@ -1,16 +1,10 @@
-import drills.ex01.User;
-import drills.ex01.UserIdsGenerator;
-import drills.ex01.Transaction;
-import drills.ex01.TransactionType;
+package drills.ex01;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 
 public class UserIdsGeneratorTest {
