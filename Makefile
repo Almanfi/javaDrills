@@ -1,9 +1,28 @@
+DIRS= java00 \
+	java01
+
 
 all:
-	cd java00 && mvn clean install
+	@for dir in $(DIRS); do \
+		cd $$dir && mvn install; \
+		cd ..; \
+	done
+	
 
 test:
-	cd java00 && mvn test
+	@for dir in $(DIRS); do \
+		cd $$dir && mvn test; \
+		cd ..; \
+	done
 
 clean: 
-	cd java00 && mvn clean
+	@for dir in $(DIRS); do \
+		cd $$dir && mvn clean; \
+		cd ..; \
+	done
+
+re:
+	@for dir in $(DIRS); do \
+		cd $$dir && mvn clean install; \
+		cd ..; \
+	done
