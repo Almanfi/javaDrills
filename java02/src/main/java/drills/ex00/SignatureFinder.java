@@ -1,40 +1,107 @@
 package drills.ex00;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.TreeMap;
 import java.util.Scanner;
 import java.util.SortedMap;
 
 public class SignatureFinder implements AutoCloseable {
-    private FileInputStream signatureFile;
+    private String logPath = "result.txt";
+    private FileOutputStream logFile;
+    private InputStream signatureFile;
     TreeMap<String, String> signatureMap = new TreeMap<>();
     int maxMagicNumberLength = 0;
 
     public static void main(String[] args) {
         try (SignatureFinder sf = new SignatureFinder()) {
-            try (FileInputStream file = new FileInputStream(args[0])) {
-                sf.searchExtention(file);
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
+            Scanner sc = new Scanner(System.in);
+            while (sc.hasNextLine()) {
+                String path = sc.nextLine().trim();
+                if (path.equals("42")) {
+                    break;
+                }
+                sf.treatFile(path);
             }
+            sc.close();
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
+    void treatFile(String path) {
+        String extention = null;
+        try (FileInputStream file = new FileInputStream
+            (path)) {
+            extention = searchExtention(file);
+        } catch (Exception e) {
+            System.out.println("Error: treatFile - " + e.getMessage());
+        }
+        if (extention == null) {
+            System.out.println("UNDEFINED");
+            return;
+        }
+        System.out.println("PROCESSED");
+        logExtentionToFile(extention);
+    }
+
+    private void logExtentionToFile(String extention) {
+        try {
+            if (logFile == null) {
+                logFile = new FileOutputStream(logPath, true);
+            }
+            logFile.write((extention + "\n").getBytes());
+        } catch (Exception e) {
+            System.out.println("Error: logExtentionToFile - " + e.getMessage());
+        }
+    }
+
     public SignatureFinder() {
         try {
-            signatureFile = new FileInputStream("drills/ex00/signatures.txt");
+            signatureFile = SignatureFinder.class.getResourceAsStream("signatures.txt");
+            if (signatureFile == null) {
+                System.out.println("Resource file not found.");
+                System.exit(1);
+            }
+            // signatureFile = new FileInputStream("drills/ex00/signatures.txt");
         } catch (Exception e) {
             System.out.println("Error: signature file - " + e.getMessage());
+            System.exit(1);
+        }
+        try {
+            logFile = new FileOutputStream(logPath, true);
+        } catch (Exception e) {
+            System.out.println("Error: log file - " + e.getMessage());
+            System.exit(2);
         }
         loadSignatureMap();
+    }
+
+    public Path getLogPath() {
+        try {
+            return java.nio.file.Paths.get(logPath);
+        } catch (Exception e) {
+            System.out.println("Error: getLogPath - " + e.getMessage());
+        }
+        return null;
+    }
+
+    void deleteLog() {
+        try {
+            logFile.close();
+            java.nio.file.Files.delete(java.nio.file.Paths.get(logPath));
+        } catch (Exception e) {
+            System.out.println("Error: deleteLog - " + e.getMessage());
+        }
     }
 
     @Override
     public void close() {
         try {
             signatureFile.close();
+            logFile.close();
         } catch (Exception e) {}
     }
 
@@ -74,33 +141,30 @@ public class SignatureFinder implements AutoCloseable {
         sc.close();
     }
 
-    void searchExtention(FileInputStream file) {
+    String searchExtention(FileInputStream file) {
         int byteRead = 0;
+        String extention = null;
         try {
             byte[] buffer = new byte[maxMagicNumberLength];
             byteRead = file.read(buffer);
             if (byteRead == -1) {
                 throw new ExtentionNotFoundException(null);
             }
-            String Extention = searchSignatures(buffer, byteRead);
-            if (Extention == null) {
-                throw new ExtentionNotFoundException(null);
-            }
-            System.out.println("Extention: " + Extention);
+            extention = searchSignatures(buffer, byteRead);
         } catch (Exception e) {
             System.out.println("Error: searchExtention - " + e.getMessage());
         }
+        return extention;
     }
 
-    private String searchSignatures(byte[] buffer, int byteRead) {
+    String searchSignatures(byte[] buffer, int byteRead) {
         String bytes = "";
         for (int i = 0; i < byteRead; i++) {
             String byteStr = Integer.toHexString(buffer[i] & 0xFF);
-            byteStr.toUpperCase();
             if (byteStr.length() == 1) {
                 byteStr = "0" + byteStr;
             }
-            bytes += byteStr;
+            bytes += byteStr.toUpperCase();;
             SortedMap<String, String> possibleExtentions = possibleExtentions(bytes);
             int size = possibleExtentions.size();
             if (size == 0) {
@@ -135,8 +199,6 @@ public class SignatureFinder implements AutoCloseable {
     public SortedMap<String, String> possibleExtentions(String bytes) { // could pass map to continue search in section
         String EndKey = bytes + Character.MAX_VALUE;
         SortedMap<String, String> possibleExtentions = signatureMap.subMap(bytes, EndKey);
-        System.out.println("searching for : " + bytes);
-        System.out.println("possibleExtentions: " + possibleExtentions.size());
         return possibleExtentions;
     }
 
