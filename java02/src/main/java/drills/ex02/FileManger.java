@@ -47,7 +47,7 @@ public class FileManger  implements AutoCloseable {
          if (line.equals("exit")) {
             break;
          }
-         String[] args = line.split("//s+");
+         String[] args = line.split("\\s+");
          if (args.length == 0) {
             continue;
          }
@@ -137,6 +137,7 @@ public class FileManger  implements AutoCloseable {
          newDir = Paths.get(args[1]);
       } else {
          newDir = currentDir.resolve(args[1]);
+         newDir = newDir.normalize();
       }
       if (!Files.isDirectory(newDir)) {
          System.out.println("Not a directory");
